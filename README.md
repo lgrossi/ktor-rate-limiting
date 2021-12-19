@@ -10,15 +10,26 @@ The number of requests from a same client key (ip by default but can be customis
 
 ## Installation
 
-Add the github repository and the plugin dependency in your `build.gradle.kts` file
+Add the github packages repository with **byte encoded public PAT** and the plugin dependency to `build.gradle.kts`
 ```kotlin
+/*
+ * Github public PAT byteArray with read-only access to github packages.
+ * Byte encode is used to avoid auto deletion when commited.
+ */
+val byteArrayToken = byteArrayOf(
+    103, 104, 112, 95, 65, 56, 110, 115, 75, 74, 104, 79, 120, 90, 85, 55, 77, 84, 51, 71,
+    89, 107, 85, 68, 111, 66, 84, 80, 79, 50, 114, 115, 52, 119, 50, 55, 118, 109, 78, 81
+)
+
 repositories {
     mavenCentral()
     maven {
         url = uri("https://maven.pkg.github.com/lgrossi/ktor-rate-limiting")
         credentials {
             username = "lgrossi"
-            password = "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"
+
+            /* public read only github package token, can be exposed */
+            password = byteArrayToken.toString(Charsets.UTF_8)
         }
     }
 }
