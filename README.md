@@ -18,7 +18,7 @@ repositories {
         url = uri("https://maven.pkg.github.com/lgrossi/ktor-rate-limiting")
         credentials {
             username = "lgrossi"
-            password = "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"
+            password = "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"
         }
     }
 }
