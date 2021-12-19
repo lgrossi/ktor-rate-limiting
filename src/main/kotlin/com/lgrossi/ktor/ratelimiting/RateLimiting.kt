@@ -10,11 +10,11 @@ import io.ktor.util.pipeline.*
 import java.time.Duration
 
 class RateLimiting private constructor(configuration: Configuration) {
-    private val rateLimit = RateLimiter<Any>(configuration.limit, configuration.duration)
+    private val rateLimit = RateLimiter<Any>(configuration.limit(), configuration.duration())
 
-    private val keyExtractor = configuration.keyExtractCallback
-    private val bypassedPaths = configuration.bypassedPaths + Configuration.LimiterDefaultBypassedPaths
-    private val bypassedMethods = configuration.bypassedMethods + Configuration.LimiterDefaultBypassedMethods
+    private val keyExtractor = configuration.keyExtractCallback()
+    private val bypassedPaths = configuration.bypassedPaths() + Configuration.LimiterDefaultBypassedPaths
+    private val bypassedMethods = configuration.bypassedMethods() + Configuration.LimiterDefaultBypassedMethods
 
     private fun bypass(method: HttpMethod, path: String): Boolean {
         return method in bypassedMethods || path in bypassedPaths
@@ -66,17 +66,37 @@ class RateLimiting private constructor(configuration: Configuration) {
     }
 
     class Configuration {
-        var limit: Long = 1000L
+        private var limit: Long = 1000L
 
-        var duration: Duration = Duration.ofHours(1L)
+        private var duration: Duration = Duration.ofHours(1L)
 
-        var keyExtractCallback: (context: PipelineContext<Unit, ApplicationCall>) -> Any = {
+        private var keyExtractCallback: (context: PipelineContext<Unit, ApplicationCall>) -> Any = {
             context -> context.call.request.origin.remoteHost
         }
 
-        val bypassedMethods: MutableSet<HttpMethod> = HashSet()
+        private val bypassedMethods: MutableSet<HttpMethod> = HashSet()
 
-        val bypassedPaths: MutableSet<String> = mutableSetOf()
+        private val bypassedPaths: MutableSet<String> = mutableSetOf()
+
+        fun limit(): Long {
+            return limit
+        }
+
+        fun duration(): Duration {
+            return duration
+        }
+
+        fun keyExtractCallback(): (context: PipelineContext<Unit, ApplicationCall>) -> Any {
+            return keyExtractCallback
+        }
+
+        fun bypassedMethods(): MutableSet<HttpMethod> {
+            return bypassedMethods
+        }
+
+        fun bypassedPaths(): MutableSet<String> {
+            return bypassedPaths
+        }
 
         fun limit(numberOfRequests: Long) {
             limit = numberOfRequests
