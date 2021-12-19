@@ -1,0 +1,25 @@
+name: Build and run tests
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v1
+
+      - name: Cache gradle
+        uses: actions/cache@v1
+        id: cache-gradle
+        with:
+          path: ~/.gradle
+          key: gradle-${{ hashFiles('build.gradle.kts') }}-${{ hashFiles('.github/workflows/build-and-run-tests.yml') }}
+
+      - name: Resolve dependencies
+        if: steps.cache-gradle.output.cache-hit != 'true'
+        run: gradle --no-daemon dependencies
+
+      - name: Build
+        run: gradle --no-daemon build
+
+      - name: Run tests
+        run: gradle --no-daemon test
