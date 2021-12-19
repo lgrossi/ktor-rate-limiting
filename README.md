@@ -10,13 +10,25 @@ The number of requests from a same client key (ip by default but can be customis
 
 ## Installation
 
-Include this plugin as dependency in your `build.gradle.kts` file
+Add the github repository and the plugin dependency in your `build.gradle.kts` file
 ```kotlin
+repositories {
+    mavenCentral()
+    maven {
+        url = uri("https://maven.pkg.github.com/lgrossi/ktor-rate-limiting")
+        credentials {
+            username = "lgrossi"
+            password = "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"
+        }
+    }
+}
+
 dependencies {
     ...
     implementation("com.lgrossi:ktor-rate-limiting:1.0.0")
 }
 ```
+The token shared above is an access token for github packages. It's read-only, so it can be safely shared with others. Normally, sharing your secrets and tokens is not a good practice, but github still doesn't have unauthenticated reader for their packages.
 
 Maven pom.xml
 ```xml
